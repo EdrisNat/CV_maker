@@ -118,6 +118,28 @@
       flex-wrap: wrap;
       gap: 1rem;
       align-items: flex-end;
+      position: relative;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .reference-entry.dragging {
+      opacity: 0.5;
+      transform: scale(0.98);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      z-index: 10;
+    }
+
+    .drag-handle {
+      cursor: grab;
+      font-size: 1.4rem;
+      color: #b7cdde;
+      user-select: none;
+      align-self: center;
+      padding-bottom: 0.5rem;
+    }
+
+    .drag-handle:active {
+      cursor: grabbing;
     }
 
     .btn {

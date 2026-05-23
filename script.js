@@ -343,6 +343,7 @@
         div.className = 'reference-entry';
         div.dataset.index = index;
         div.innerHTML = `
+          <div class="drag-handle" title="Drag to reorder">☰</div>
           <div class="input-field" style="flex:1 1 180px;"><label>Period</label><input class="work-date" value="${escapeHtml(item.date)}"></div>
           <div class="input-field" style="flex:2 1 200px;"><label>Role</label><input class="work-role" value="${escapeHtml(item.role)}"></div>
           <div class="input-field" style="flex:2 1 200px;"><label>Institution</label><input class="work-institution" value="${escapeHtml(item.institution)}"></div>
@@ -388,6 +389,7 @@
         div.className = 'reference-entry';
         div.dataset.index = index;
         div.innerHTML = `
+          <div class="drag-handle" title="Drag to reorder">☰</div>
           <div class="input-field" style="flex:1 1 160px;"><label>Date</label><input class="edu-date" value="${escapeHtml(item.date)}"></div>
           <div class="input-field" style="flex:2 1 200px;"><label>Degree</label><input class="edu-degree" value="${escapeHtml(item.degree)}"></div>
           <div class="input-field" style="flex:2 1 200px;"><label>Institution</label><input class="edu-institution" value="${escapeHtml(item.institution)}"></div>
@@ -431,6 +433,7 @@
         div.className = 'reference-entry';
         div.dataset.index = index;
         div.innerHTML = `
+          <div class="drag-handle" title="Drag to reorder">☰</div>
           <div class="input-field" style="flex:2 1 180px;"><label>Organization</label><input class="ref-org" value="${escapeHtml(item.organization)}"></div>
           <div class="input-field" style="flex:2 1 180px;"><label>Name</label><input class="ref-name" value="${escapeHtml(item.name)}"></div>
           <div class="input-field" style="flex:1 1 130px;"><label>Contact</label><input class="ref-contact" value="${escapeHtml(item.contact)}"></div>
@@ -474,6 +477,7 @@
         div.className = 'reference-entry';
         div.dataset.index = index;
         div.innerHTML = `
+          <div class="drag-handle" title="Drag to reorder">☰</div>
           <div class="input-field" style="flex:2 1 180px;"><label>Skill</label><input class="skill-name" value="${escapeHtml(item.name)}"></div>
           <div class="input-field" style="flex:1 1 130px;"><label>Level (Optional)</label><input class="skill-level-input" value="${escapeHtml(item.level)}" placeholder="e.g. Expert, 5/5"></div>
           <button type="button" class="btn-outline btn remove-skill-btn">✕</button>
@@ -500,6 +504,7 @@
         div.className = 'reference-entry';
         div.dataset.index = index;
         div.innerHTML = `
+          <div class="drag-handle" title="Drag to reorder">☰</div>
           <div class="input-field" style="flex:2 1 180px;"><label>Language</label><input class="lang-name" value="${escapeHtml(item.name)}"></div>
           <div class="input-field" style="flex:1 1 130px;"><label>Proficiency</label><input class="lang-level-input" value="${escapeHtml(item.level)}" placeholder="e.g. Native, Fluent"></div>
           <button type="button" class="btn-outline btn remove-lang-btn">✕</button>
@@ -719,6 +724,91 @@
       updateCVPreview();
       document.getElementById('cvOutput').scrollIntoView({behavior: 'smooth'});
     });
+
+    // --- Drag and Drop Reordering ---
+    let draggedElement = null;
+    let draggedArray = null;
+    let draggedRenderFn = null;
+
+    document.addEventListener('mousedown', e => {
+      if (e.target.classList.contains('drag-handle')) {
+        e.target.closest('.reference-entry').draggable = true;
+      }
+    });
+    
+    document.addEventListener('mouseup', e => {
+      if (e.target.classList.contains('drag-handle')) {
+        const entry = e.target.closest('.reference-entry');
+        if(entry) entry.draggable = false;
+      }
+    });
+
+    document.addEventListener('dragstart', e => {
+      const entry = e.target.closest('.reference-entry');
+      if (!entry) return;
+      draggedElement = entry;
+      entry.classList.add('dragging');
+      const containerId = entry.parentElement.id;
+      if (containerId === 'workEntries') { draggedArray = workItems; draggedRenderFn = renderWorkFields; }
+      else if (containerId === 'educationEntries') { draggedArray = educationItems; draggedRenderFn = renderEducationFields; }
+      else if (containerId === 'skillEntries') { draggedArray = skillItems; draggedRenderFn = renderSkillFields; }
+      else if (containerId === 'languageEntries') { draggedArray = languageItems; draggedRenderFn = renderLanguageFields; }
+      else if (containerId === 'referenceEntries') { draggedArray = referenceItems; draggedRenderFn = renderReferenceFields; }
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', entry.dataset.index);
+    });
+
+    document.addEventListener('dragover', e => {
+      e.preventDefault();
+      const targetEntry = e.target.closest('.reference-entry');
+      if (targetEntry && targetEntry !== draggedElement && targetEntry.parentElement === draggedElement.parentElement) {
+        const rect = targetEntry.getBoundingClientRect();
+        const midY = rect.top + rect.height / 2;
+        targetEntry.style.borderTop = e.clientY < midY ? '2px solid var(--theme-primary)' : '';
+        targetEntry.style.borderBottom = e.clientY >= midY ? '2px solid var(--theme-primary)' : '';
+      }
+    });
+
+    document.addEventListener('dragleave', e => {
+      const targetEntry = e.target.closest('.reference-entry');
+      if (targetEntry) {
+        targetEntry.style.borderTop = '';
+        targetEntry.style.borderBottom = '';
+      }
+    });
+
+    document.addEventListener('drop', e => {
+      e.preventDefault();
+      const targetEntry = e.target.closest('.reference-entry');
+      if (targetEntry) {
+        targetEntry.style.borderTop = '';
+        targetEntry.style.borderBottom = '';
+      }
+      if (!targetEntry || !draggedElement || targetEntry === draggedElement) return;
+      if (targetEntry.parentElement !== draggedElement.parentElement) return;
+
+      const fromIndex = parseInt(draggedElement.dataset.index);
+      const toIndex = parseInt(targetEntry.dataset.index);
+      const rect = targetEntry.getBoundingClientRect();
+      const midY = rect.top + rect.height / 2;
+      let insertIndex = e.clientY >= midY ? toIndex + 1 : toIndex;
+      if (fromIndex < insertIndex) insertIndex--;
+
+      const item = draggedArray.splice(fromIndex, 1)[0];
+      draggedArray.splice(insertIndex, 0, item);
+
+      draggedRenderFn();
+      updateCVPreview();
+    });
+
+    document.addEventListener('dragend', e => {
+      if (draggedElement) {
+        draggedElement.classList.remove('dragging');
+        draggedElement.draggable = false;
+      }
+      draggedElement = null; draggedArray = null; draggedRenderFn = null;
+    });
+    // --------------------------------
 
     // --- Auto-Save Feature ---
     function saveCurrentState() {
