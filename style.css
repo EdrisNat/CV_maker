@@ -352,6 +352,9 @@
     .institution { font-weight: 600; color: var(--theme-text-sub); }
     .reference-grid { display: flex; flex-wrap: wrap; gap: 2rem; }
     .ref-item { background: var(--theme-bg-subtle); padding: 1.2rem; border-radius: 1rem; border-left: 3px solid var(--theme-primary-light); flex: 1 1 200px;}
+    .skills-grid { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 1.5rem; }
+    .skill-pill { background: var(--theme-bg-subtle); padding: 0.6rem 1.2rem; border-radius: 2rem; border: 1px solid var(--theme-border); font-size: 0.95rem; color: var(--theme-text-strong); display: flex; align-items: center; gap: 0.4rem; }
+    .skill-level { color: var(--theme-text-sub); font-size: 0.85rem; font-weight: 500; }
 
     /* Objective field styling */
     #objective {

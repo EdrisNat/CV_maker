@@ -28,6 +28,15 @@
         {date:"Sep 2013 - May 2017", degree:"Bachelor of Science in Computer Science", institution:"University of Technology", extra:"Graduated with Honors. President of the Coding Club."},
         {date:"Sep 2011 - Jun 2013", degree:"High School Diploma", institution:"City High School", extra:"Valedictorian."}
       ],
+      skills: [
+        {name:"JavaScript", level:"Expert"},
+        {name:"React.js", level:"Advanced"},
+        {name:"Project Management", level:"Intermediate"}
+      ],
+      languages: [
+        {name:"English", level:"Native"},
+        {name:"Spanish", level:"Conversational"}
+      ],
       references: [
         {name:"John Smith", contact:"(555) 123-4567", email:"john.smith@example.com", organization:"Tech Solutions Inc."},
         {name:"Sarah Johnson", contact:"(555) 987-6543", email:"sarah.j@example.com", organization:"Creative Digital Agency"}
@@ -36,6 +45,8 @@
 
     let workItems = JSON.parse(JSON.stringify(defaultData.work));
     let educationItems = JSON.parse(JSON.stringify(defaultData.education));
+    let skillItems = JSON.parse(JSON.stringify(defaultData.skills));
+    let languageItems = JSON.parse(JSON.stringify(defaultData.languages));
     let referenceItems = JSON.parse(JSON.stringify(defaultData.references));
 
     // Theme definitions
@@ -113,6 +124,7 @@
     document.querySelectorAll('input[name="themeColor"]').forEach(radio => {
       radio.addEventListener('change', function(e) {
         applyTheme(e.target.value);
+        if (typeof saveCurrentState === 'function') saveCurrentState();
       });
     });
 
@@ -454,6 +466,58 @@
       });
     }
 
+    function renderSkillFields() {
+      const container = document.getElementById('skillEntries');
+      container.innerHTML = '';
+      skillItems.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'reference-entry';
+        div.dataset.index = index;
+        div.innerHTML = `
+          <div class="input-field" style="flex:2 1 180px;"><label>Skill</label><input class="skill-name" value="${escapeHtml(item.name)}"></div>
+          <div class="input-field" style="flex:1 1 130px;"><label>Level (Optional)</label><input class="skill-level-input" value="${escapeHtml(item.level)}" placeholder="e.g. Expert, 5/5"></div>
+          <button type="button" class="btn-outline btn remove-skill-btn">✕</button>
+        `;
+        container.appendChild(div);
+      });
+      document.querySelectorAll('.remove-skill-btn').forEach(btn => btn.addEventListener('click', e => {
+          skillItems.splice(parseInt(e.target.closest('.reference-entry').dataset.index), 1);
+          renderSkillFields(); updateCVPreview();
+      }));
+      document.querySelectorAll('#skillEntries .reference-entry').forEach(entry => {
+        entry.querySelectorAll('input').forEach(input => input.addEventListener('input', () => {
+          skillItems[parseInt(entry.dataset.index)] = { name: entry.querySelector('.skill-name').value, level: entry.querySelector('.skill-level-input').value };
+          updateCVPreview();
+        }));
+      });
+    }
+
+    function renderLanguageFields() {
+      const container = document.getElementById('languageEntries');
+      container.innerHTML = '';
+      languageItems.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'reference-entry';
+        div.dataset.index = index;
+        div.innerHTML = `
+          <div class="input-field" style="flex:2 1 180px;"><label>Language</label><input class="lang-name" value="${escapeHtml(item.name)}"></div>
+          <div class="input-field" style="flex:1 1 130px;"><label>Proficiency</label><input class="lang-level-input" value="${escapeHtml(item.level)}" placeholder="e.g. Native, Fluent"></div>
+          <button type="button" class="btn-outline btn remove-lang-btn">✕</button>
+        `;
+        container.appendChild(div);
+      });
+      document.querySelectorAll('.remove-lang-btn').forEach(btn => btn.addEventListener('click', e => {
+          languageItems.splice(parseInt(e.target.closest('.reference-entry').dataset.index), 1);
+          renderLanguageFields(); updateCVPreview();
+      }));
+      document.querySelectorAll('#languageEntries .reference-entry').forEach(entry => {
+        entry.querySelectorAll('input').forEach(input => input.addEventListener('input', () => {
+          languageItems[parseInt(entry.dataset.index)] = { name: entry.querySelector('.lang-name').value, level: entry.querySelector('.lang-level-input').value };
+          updateCVPreview();
+        }));
+      });
+    }
+
     // CV Preview update
     function updateCVPreview() {
       const fullName = document.getElementById('fullName')?.value || "Your Name";
@@ -488,7 +552,23 @@
         </div>`;
       });
       
-      html += `<div class="section-heading"><span style="font-size: 1.2rem;">📇</span> References</div><div class="reference-grid">`;
+      html += `<div class="section-heading"><span style="font-size: 1.2rem;">�️</span> Skills</div><div class="skills-grid">`;
+      skillItems.forEach(item => {
+        if(item.name.trim() !== '') {
+            html += `<div class="skill-pill"><strong>${escapeHtml(item.name)}</strong> ${item.level ? `<span class="skill-level">• ${escapeHtml(item.level)}</span>` : ''}</div>`;
+        }
+      });
+      html += `</div>`;
+      
+      html += `<div class="section-heading"><span style="font-size: 1.2rem;">🌍</span> Languages</div><div class="skills-grid">`;
+      languageItems.forEach(item => {
+        if(item.name.trim() !== '') {
+            html += `<div class="skill-pill"><strong>${escapeHtml(item.name)}</strong> ${item.level ? `<span class="skill-level">• ${escapeHtml(item.level)}</span>` : ''}</div>`;
+        }
+      });
+      html += `</div>`;
+      
+      html += `<div class="section-heading"><span style="font-size: 1.2rem;">�📇</span> References</div><div class="reference-grid">`;
       referenceItems.forEach(ref => {
         html += `<div class="ref-item">
           <strong style="color: var(--theme-accent); font-size: 1.05rem;">${escapeHtml(ref.organization)}</strong><br>
@@ -506,6 +586,8 @@
       
       // Attach download handler
       document.getElementById('downloadPdfBtn').addEventListener('click', downloadCVAsPDF);
+      
+      if (typeof saveCurrentState === 'function') saveCurrentState();
     }
 
     /**
@@ -592,6 +674,16 @@
       renderEducationFields();
     });
     
+    document.getElementById('addSkillBtn').addEventListener('click', function() {
+      skillItems.push({name: '', level: ''});
+      renderSkillFields();
+    });
+    
+    document.getElementById('addLanguageBtn').addEventListener('click', function() {
+      languageItems.push({name: '', level: ''});
+      renderLanguageFields();
+    });
+    
     document.getElementById('addReferenceBtn').addEventListener('click', function() {
       referenceItems.push({organization: '', name: '', contact: '', email: ''});
       renderReferenceFields();
@@ -600,6 +692,8 @@
     document.getElementById('resetDefaultBtn').addEventListener('click', function() {
       workItems = JSON.parse(JSON.stringify(defaultData.work));
       educationItems = JSON.parse(JSON.stringify(defaultData.education));
+      skillItems = JSON.parse(JSON.stringify(defaultData.skills));
+      languageItems = JSON.parse(JSON.stringify(defaultData.languages));
       referenceItems = JSON.parse(JSON.stringify(defaultData.references));
       document.getElementById('fullName').value = defaultData.fullName;
       document.getElementById('objective').value = defaultData.objective;
@@ -614,6 +708,8 @@
       document.getElementById('photoPreview').innerHTML = '<span style="color:#8a9aa8;">No photo</span>';
       renderWorkFields();
       renderEducationFields();
+      renderSkillFields();
+      renderLanguageFields();
       renderReferenceFields();
       updateCVPreview();
     });
@@ -624,9 +720,59 @@
       document.getElementById('cvOutput').scrollIntoView({behavior: 'smooth'});
     });
 
+    // --- Auto-Save Feature ---
+    function saveCurrentState() {
+      try {
+        const state = {
+          fullName: document.getElementById('fullName')?.value,
+          objective: document.getElementById('objective')?.value,
+          theme: document.querySelector('input[name="themeColor"]:checked')?.value,
+          workItems,
+          educationItems,
+          skillItems,
+          languageItems,
+          referenceItems,
+          profileImage
+        };
+        localStorage.setItem('qismatCVState', JSON.stringify(state));
+      } catch(e) { console.warn("Failed to save state", e); }
+    }
+
+    function loadSavedState() {
+      try {
+        const saved = localStorage.getItem('qismatCVState');
+        if (saved) {
+          const state = JSON.parse(saved);
+          workItems = state.workItems || workItems;
+          educationItems = state.educationItems || educationItems;
+          skillItems = state.skillItems || skillItems;
+          languageItems = state.languageItems || languageItems;
+          referenceItems = state.referenceItems || referenceItems;
+          if (state.profileImage) {
+            profileImage = state.profileImage;
+            document.getElementById('photoPreview').innerHTML = `<img src="${profileImage}" alt="Profile photo">`;
+          }
+          if (state.fullName) document.getElementById('fullName').value = state.fullName;
+          if (state.objective) document.getElementById('objective').value = state.objective;
+          if (state.theme) {
+            const radio = document.querySelector(`input[name="themeColor"][value="${state.theme}"]`);
+            if (radio) {
+                radio.checked = true;
+                applyTheme(state.theme);
+            }
+          }
+        }
+      } catch(e) { console.warn("Failed to load state", e); }
+    }
+
+    loadSavedState();
+    // -------------------------
+
     // Initial render
     renderWorkFields();
     renderEducationFields();
+    renderSkillFields();
+    renderLanguageFields();
     renderReferenceFields();
     updateCVPreview();
   })();
