@@ -282,9 +282,12 @@
     document.getElementById('resetViewBtn').addEventListener('click', resetToFitView);
 
     // Modal controls
-    document.getElementById('cancelCropBtn').addEventListener('click', function() {
+    function closeModal() {
       document.getElementById('cropModal').style.display = 'none';
-    });
+    }
+    document.getElementById('cancelCropBtn').addEventListener('click', closeModal);
+    const altCancel = document.getElementById('cancelCropBtnAlt');
+    if (altCancel) altCancel.addEventListener('click', closeModal);
 
     document.getElementById('applyCropBtn').addEventListener('click', function() {
       if (!cropImage) return;
@@ -557,7 +560,7 @@
         </div>`;
       });
       
-      html += `<div class="section-heading"><span style="font-size: 1.2rem;">�️</span> Skills</div><div class="skills-grid">`;
+      html += `<div class="section-heading"><span style="font-size: 1.2rem;">&#x1F6E0;&#xFE0F;</span> Skills</div><div class="skills-grid">`;
       skillItems.forEach(item => {
         if(item.name.trim() !== '') {
             html += `<div class="skill-pill"><strong>${escapeHtml(item.name)}</strong> ${item.level ? `<span class="skill-level">• ${escapeHtml(item.level)}</span>` : ''}</div>`;
@@ -573,7 +576,7 @@
       });
       html += `</div>`;
       
-      html += `<div class="section-heading"><span style="font-size: 1.2rem;">�📇</span> References</div><div class="reference-grid">`;
+      html += `<div class="section-heading"><span style="font-size: 1.2rem;">&#x1F4C7;</span> References</div><div class="reference-grid">`;
       referenceItems.forEach(ref => {
         html += `<div class="ref-item">
           <strong style="color: var(--theme-accent); font-size: 1.05rem;">${escapeHtml(ref.organization)}</strong><br>
@@ -710,7 +713,7 @@
       if(firstRadio) firstRadio.checked = true;
       applyTheme('royal');
       
-      document.getElementById('photoPreview').innerHTML = '<span style="color:#8a9aa8;">No photo</span>';
+      document.getElementById('photoPreview').innerHTML = `<div class="preview-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>`;
       renderWorkFields();
       renderEducationFields();
       renderSkillFields();
@@ -857,6 +860,24 @@
 
     loadSavedState();
     // -------------------------
+
+    // ── LIGHT / DARK MODE TOGGLE ──────────────────────────────
+    (function() {
+      const btn = document.getElementById('themeToggleBtn');
+      if (!btn) return;
+
+      // Restore preference from localStorage
+      const saved = localStorage.getItem('qismatColorMode');
+      if (saved === 'light') {
+        document.body.classList.add('light-mode');
+      }
+
+      btn.addEventListener('click', function() {
+        const isLight = document.body.classList.toggle('light-mode');
+        localStorage.setItem('qismatColorMode', isLight ? 'light' : 'dark');
+      });
+    })();
+    // ─────────────────────────────────────────────────────────
 
     // Initial render
     renderWorkFields();
