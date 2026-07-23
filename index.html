@@ -48,6 +48,14 @@
       <div class="panel-intro">
         <h1 class="panel-title">Craft Your Story</h1>
         <p class="panel-subtitle">Fill in your details below — your CV updates live as you type.</p>
+        <div class="completeness" id="completeness">
+          <div class="completeness-head">
+            <span class="completeness-label">CV Strength</span>
+            <span class="completeness-pct" id="completenessPct">0%</span>
+          </div>
+          <div class="completeness-bar"><div class="completeness-fill" id="completenessFill"></div></div>
+          <p class="completeness-hint" id="completenessHint"></p>
+        </div>
       </div>
 
       <form id="cvForm">
@@ -122,6 +130,63 @@
           </div>
         </div>
 
+        <!-- DESIGN & LAYOUT -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🖌️</div>
+            <div class="card-label">Design &amp; Layout</div>
+          </div>
+
+          <label class="field-label" style="display:block; margin-bottom:0.6rem;">Template</label>
+          <div class="template-grid">
+            <label class="template-swatch" data-template="classic">
+              <input type="radio" name="template" value="classic" checked>
+              <span class="template-thumb template-thumb-classic" aria-hidden="true">
+                <span class="tt-bar"></span><span class="tt-line"></span><span class="tt-line short"></span>
+              </span>
+              <span class="template-name">Classic</span>
+            </label>
+            <label class="template-swatch" data-template="sidebar">
+              <input type="radio" name="template" value="sidebar">
+              <span class="template-thumb template-thumb-sidebar" aria-hidden="true">
+                <span class="tt-side"></span><span class="tt-main"><span class="tt-line"></span><span class="tt-line short"></span></span>
+              </span>
+              <span class="template-name">Sidebar</span>
+            </label>
+          </div>
+
+          <label class="field-label" style="display:block; margin:1.4rem 0 0.6rem;">Font Pairing</label>
+          <div class="field-group">
+            <select id="fontPairing" class="field-input">
+              <option value="serif" selected>Elegant Serif — DM Serif + DM Sans</option>
+              <option value="modern">Modern Sans — DM Sans throughout</option>
+              <option value="classic">Timeless — Georgia + Calibri</option>
+            </select>
+          </div>
+
+          <label class="field-label" style="display:block; margin:1.4rem 0 0.6rem;">Photo Shape</label>
+          <div class="segmented" id="photoShapeGroup">
+            <button type="button" class="segmented-btn active" data-shape="circle">Circle</button>
+            <button type="button" class="segmented-btn" data-shape="square">Square</button>
+            <button type="button" class="segmented-btn" data-shape="none">No Photo</button>
+          </div>
+          <label class="switch-row" style="margin-top:1rem;">
+            <input type="checkbox" id="atsMode">
+            <span class="switch-track"><span class="switch-thumb"></span></span>
+            <span class="switch-text">ATS-friendly mode <span class="switch-hint">— hides photo &amp; decorative accents for resume scanners</span></span>
+          </label>
+        </div>
+
+        <!-- MANAGE SECTIONS -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🧩</div>
+            <div class="card-label">Manage Sections</div>
+          </div>
+          <p class="field-hint" style="margin-bottom: 1.2rem;">Toggle sections on/off and drag to reorder how they appear on your CV.</p>
+          <div id="sectionManager" class="section-manager"></div>
+        </div>
+
         <!-- FULL NAME -->
         <div class="card">
           <div class="card-header">
@@ -131,6 +196,75 @@
           <div class="field-group">
             <label class="field-label">Your complete name</label>
             <input type="text" id="fullName" class="field-input" value="Jane Doe">
+          </div>
+          <div class="field-group" style="margin-top:1rem;">
+            <label class="field-label">Professional title / headline</label>
+            <input type="text" id="jobTitle" class="field-input" placeholder="e.g. Senior Software Engineer" value="Senior Software Engineer">
+          </div>
+        </div>
+
+        <!-- CONTACT INFORMATION -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">📬</div>
+            <div class="card-label">Contact Information</div>
+          </div>
+          <p class="field-hint" style="margin-bottom: 1.2rem;">Optional — blank fields are hidden from your CV.</p>
+          <div class="detail-fields">
+            <div class="field-group">
+              <label class="field-label" for="contactEmail">Email</label>
+              <input type="email" id="contactEmail" class="field-input" placeholder="you@example.com" value="jane.doe@example.com">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="contactPhone">Phone</label>
+              <input type="tel" id="contactPhone" class="field-input" placeholder="+1 555 123 4567" value="+1 (555) 123-4567">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="contactLocation">Location</label>
+              <input type="text" id="contactLocation" class="field-input" placeholder="City, Country" value="New York, USA">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="contactLinkedin">LinkedIn</label>
+              <input type="text" id="contactLinkedin" class="field-input" placeholder="linkedin.com/in/username" value="linkedin.com/in/janedoe">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="contactWebsite">Website / Portfolio</label>
+              <input type="text" id="contactWebsite" class="field-input" placeholder="yoursite.com" value="janedoe.dev">
+            </div>
+          </div>
+        </div>
+
+        <!-- PERSONAL DETAILS -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🪪</div>
+            <div class="card-label">Personal Details</div>
+          </div>
+          <p class="field-hint" style="margin-bottom: 1.2rem;">Optional — leave any field blank to hide it from your CV.</p>
+          <div class="detail-fields">
+            <div class="field-group">
+              <label class="field-label" for="gender">Gender</label>
+              <select id="gender" class="field-input">
+                <option value="">— Not specified —</option>
+                <option value="Male">Male</option>
+                <option value="Female" selected>Female</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="maritalStatus">Marital Status</label>
+              <select id="maritalStatus" class="field-input">
+                <option value="">— Not specified —</option>
+                <option value="Single" selected>Single</option>
+                <option value="Married">Married</option>
+                <option value="Divorced">Divorced</option>
+                <option value="Widowed">Widowed</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="nationality">Nationality</label>
+              <input type="text" id="nationality" class="field-input" placeholder="e.g. Ugandan" value="American">
+            </div>
           </div>
         </div>
 
@@ -210,12 +344,84 @@
           </button>
         </div>
 
+        <!-- CERTIFICATIONS -->
+        <div class="card" data-section-card="certifications">
+          <div class="card-header">
+            <div class="card-icon">📜</div>
+            <div class="card-label">Certifications</div>
+          </div>
+          <div id="certificationEntries"></div>
+          <button type="button" class="btn btn-add" id="addCertificationBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Certification
+          </button>
+        </div>
+
+        <!-- PROJECTS -->
+        <div class="card" data-section-card="projects">
+          <div class="card-header">
+            <div class="card-icon">🚀</div>
+            <div class="card-label">Projects</div>
+          </div>
+          <div id="projectEntries"></div>
+          <button type="button" class="btn btn-add" id="addProjectBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Project
+          </button>
+        </div>
+
+        <!-- AWARDS -->
+        <div class="card" data-section-card="awards">
+          <div class="card-header">
+            <div class="card-icon">🏆</div>
+            <div class="card-label">Awards &amp; Honors</div>
+          </div>
+          <div id="awardEntries"></div>
+          <button type="button" class="btn btn-add" id="addAwardBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Award
+          </button>
+        </div>
+
+        <!-- VOLUNTEERING -->
+        <div class="card" data-section-card="volunteering">
+          <div class="card-header">
+            <div class="card-icon">🤝</div>
+            <div class="card-label">Volunteering</div>
+          </div>
+          <div id="volunteeringEntries"></div>
+          <button type="button" class="btn btn-add" id="addVolunteeringBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Volunteering
+          </button>
+        </div>
+
+        <!-- SAVE & EXPORT -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">💾</div>
+            <div class="card-label">Save &amp; Export</div>
+          </div>
+          <p class="field-hint" style="margin-bottom: 1.2rem;">Your work auto-saves in this browser. Export a backup, import it on another device, or share a link.</p>
+          <div class="export-btn-row">
+            <button type="button" class="btn btn-secondary" id="exportJsonBtn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export JSON
+            </button>
+            <button type="button" class="btn btn-secondary" id="importJsonBtn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Import JSON
+            </button>
+            <input type="file" id="importJsonInput" accept="application/json,.json" style="display:none;">
+            <button type="button" class="btn btn-secondary" id="shareLinkBtn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+              Copy Share Link
+            </button>
+          </div>
+        </div>
+
         <!-- ACTIONS -->
         <div class="form-actions">
-          <button type="submit" class="btn btn-primary">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            Generate Premium CV
-          </button>
           <button type="button" id="resetDefaultBtn" class="btn btn-ghost">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
             Reset to Default
